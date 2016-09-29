@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MIT License
+
+  Copyright (c) 2016 Kungliga Tekniska högskolan
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
+<!-- Configures the Camel Context -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jolokia="http://www.jolokia.org/jolokia-spring/schema/config"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="camel_properties" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+    <property name="location" value="file:camel.properties" />
+  </bean>
+
+  <camelContext id="ug-multicast" xmlns="http://camel.apache.org/schema/spring">
+    <route id="ug-to-destinations-multicast">
+      <from uri="amqp:queue:{{service_bus.ug.queue}}?transacted=false" />
+      <multicast>
+        <to uri="amqp:queue:{{service_bus.canvas.queue}}" />
+      </multicast>
+      <to uri="log:se.kth.integral.route.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
+    </route>
+  </camelContext>
+
+  <!-- ug-propagator queue -->
+  <bean id="ugJmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
+    <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000&amp;amqp.traceFrames=true" />
+        <!-- amqp.drainTimeout=60000 qpid.heartbeat=10 transport.tcpKeepAlive=true-->
+    <property name="username" value="${service_bus.user}" />
+    <property name="password" value="${service_bus.password}" />
+  </bean>
+  <bean id="ugJmsCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+    <property name="targetConnectionFactory" ref="ugJmsConnectionFactory" />
+  </bean>
+  <bean id="ugJmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+<!--     <property name="connectionFactory" ref="ugJmsConnectionFactory" /> -->
+    <property name="connectionFactory" ref="ugJmsCachingConnectionFactory" />
+    <property name="cacheLevelName" value="CACHE_NONE" />
+  </bean>
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
+    <property name="configuration" ref="ugJmsConfig" />
+  </bean>
+
+  <!-- Jolokia monitor agent -->
+  <bean name="jolokia" id="jolokia" class="org.jolokia.jvmagent.spring.SpringJolokiaAgent">
+    <property name="lookupConfig" value="false" />
+    <property name="systemPropertiesMode" value="never" />
+    <property name="config">
+      <bean class="org.jolokia.jvmagent.spring.SpringJolokiaConfigHolder">
+        <property name="config">
+          <map>
+            <entry key="autoStart" value="true" />
+            <entry key="host" value="0.0.0.0" />
+            <entry key="port" value="8181" />
+            <entry key="discoveryAgentUrl" value="/hawtio/jvm/connect?name=camel-#{'$'}{host}&amp;host=#{'$'}{host}&amp;port=8181&amp;path=jolokia" />
+            <entry key="agentDescription" value="UG to Destinations Multicast route" />
+          </map>
+        </property>
+      </bean>
+    </property>
+  </bean>
+
+  <!-- Log enabler for the monitor agent -->
+  <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery"
+    init-method="start" destroy-method="stop" scope="singleton"
+    lazy-init="false">
+  </bean>
+
+  <bean id="mavenIndexer" class="io.hawt.maven.indexer.AsyncMavenIndexerFacadeFactory"
+    init-method="init" destroy-method="destroy" scope="singleton">
+    <property name="indexDirectory" value="mvn" />
+    <property name="repositories" value="https://repo1.maven.org/maven2@central" />
+  </bean>
+  <bean id="aetherFacade" class="io.hawt.aether.AetherFacade"
+    init-method="init" destroy-method="destroy" scope="singleton" />
+</beans>
