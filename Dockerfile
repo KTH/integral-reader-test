@@ -20,7 +20,7 @@ ENV SERVICE_BUS_CANVAS_QUEUE the-service-bus-queue
 # Jolokia management and discovery
 EXPOSE 8181 24884
 
-ADD target/*-with-dependencies.jar /opt/camel/application.jar
+ADD target/ug-multicast-*.jar /opt/camel/application.jar
 ADD run.sh /opt/integral/run.sh
 RUN chmod +x /opt/integral/run.sh
 
