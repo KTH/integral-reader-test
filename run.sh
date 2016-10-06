@@ -11,7 +11,7 @@ service_bus.canvas.queue=${SERVICE_BUS_CANVAS_QUEUE:?}
 eof
 
 if [ "$*" = "start" ]; then
-	exec java -jar application.jar
+    exec java -jar application.jar
 fi
 
 exec $*

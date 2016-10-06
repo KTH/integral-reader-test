@@ -13,7 +13,7 @@
   <camelContext id="ug-multicast" xmlns="http://camel.apache.org/schema/spring">
     <route id="ug-to-destinations-multicast">
       <from uri="amqp:queue:{{service_bus.ug.queue}}" />
-      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
+      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=INFO&amp;showAll=true" />
     </route>
   </camelContext>
 
@@ -21,7 +21,7 @@
   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
     <!-- amqp.traceFrames=true turns on protocol debugging -->
     <!-- amqp.idleTimeout=120000 is required by Service Bus -->  
-    <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000&amp;amqp.traceFrames=true" />
+    <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000" />
     <property name="username" value="${service_bus.user}" />
     <property name="password" value="${service_bus.password}" />
     <!-- Makes Service Bus connection behave reasonably -->

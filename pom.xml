@@ -87,7 +87,12 @@
       <artifactId>log4j</artifactId>
       <version>${log4j-version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>se.kth.infosys.log4j</groupId>
+      <artifactId>banyan-layout</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    
     <!-- Testing -->
     <dependency>
       <groupId>org.apache.camel</groupId>
