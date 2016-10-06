@@ -89,8 +89,8 @@
     </dependency>
     <dependency>
       <groupId>se.kth.infosys.log4j</groupId>
-      <artifactId>banyan-layout</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
+      <artifactId>bunyan-layout</artifactId>
+      <version>1.0.0</version>
     </dependency>
     
     <!-- Testing -->
