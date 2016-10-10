@@ -1,0 +1,3 @@
+**/*
+!target/ladok3-feed-*.jar
+!run.sh
