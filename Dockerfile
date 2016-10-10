@@ -1,9 +1,7 @@
 FROM openjdk:8-jre-alpine
 MAINTAINER Fredrik Jönsson <fjo@kth.se>
 
-RUN apk update && \
-    apk upgrade && \
-    apk add bash
+RUN apk --no-cache add bash
 
 ENV SERVICE_BUS_URI the-service-bus-uri
 
