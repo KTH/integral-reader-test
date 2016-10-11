@@ -76,6 +76,13 @@
         <artifactId>camel-amqp</artifactId>
         <version>${camel-version}</version>
     </dependency>
+    <!-- Need classes provided by ug-component for marshal/unmarshal -->
+    <dependency>
+      <groupId>se.kth.infosys.smx</groupId>
+      <artifactId>camel-ug-component</artifactId>
+      <version>1.2.1</version>
+      <scope>runtime</scope>
+    </dependency>
     
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -175,6 +182,46 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.4.13</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dockerDirectory>docker</dockerDirectory>
+          <imageName>kth/${project.artifactId}:${git.commit.id.abbrev}</imageName>
+          <resources>
+            <resource>
+              <targetPath>/</targetPath>
+              <directory>${project.build.directory}</directory>
+              <include>${project.build.finalName}.jar</include>
+            </resource>
+          </resources>
+        </configuration>
       </plugin>
     </plugins>
   </build>
