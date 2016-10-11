@@ -3,4 +3,6 @@
 *~
 /.settings
 /.classpath
+/create-service
 /environment
+/dependency-reduced-pom.xml
