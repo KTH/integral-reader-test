@@ -5,15 +5,11 @@ RUN apk --no-cache add bash
 
 ENV SERVICE_BUS_URI the-service-bus-uri
 
-# UG reader
-ENV SERVICE_BUS_UG_USER the-service-bus-user
-ENV SERVICE_BUS_UG_PASSWORD the-service-bus-password
-ENV SERVICE_BUS_UG_QUEUE the-service-bus-queue
-
-# Canvas writer
-ENV SERVICE_BUS_CANVAS_USER the-service-bus-user
-ENV SERVICE_BUS_CANVAS_PASSWORD the-service-bus-password
-ENV SERVICE_BUS_CANVAS_QUEUE the-service-bus-queue
+# Service bus configuration
+ENV SERVICE_BUS_USER the-service-bus-user
+ENV SERVICE_BUS_PASSWORD the-service-bus-password
+ENV SERVICE_BUS_UG_QUEUE the-service-bus-ug-queue
+ENV SERVICE_BUS_CANVAS_QUEUE the-service-bus-canvas-queue
 
 # Jolokia management and discovery
 EXPOSE 8181 24884

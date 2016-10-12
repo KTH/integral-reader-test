@@ -13,7 +13,25 @@
   <camelContext id="ug-multicast" xmlns="http://camel.apache.org/schema/spring">
     <route id="ug-to-destinations-multicast">
       <from uri="amqp:queue:{{service_bus.ug.queue}}" />
-      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=INFO&amp;showAll=true" />
+      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
+      <multicast>
+        <to uri="direct:canvas" />
+      </multicast>
+      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
+      <filter>
+        <simple>${in.header.UGOperation} == 'UPDATE'</simple>
+        <log loggingLevel="INFO" message="Handled update for ${in.header.UGClass}, ${in.header.UGKthid}, version ${in.header.UGVersion}"/>
+      </filter>
+    </route>
+
+    <!--  Route for messages intended for Canvas -->
+    <route id="ug-canvas-route">
+      <from uri="direct:canvas"/>
+      <filter>
+        <!-- Should filter messages and attributes here -->
+        <simple>${in.header.UGOperation} == 'UPDATE'</simple>
+        <to uri="amqp:queue:{{service_bus.canvas.queue}}" />
+      </filter>
     </route>
   </camelContext>
 
