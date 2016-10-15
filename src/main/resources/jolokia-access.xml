@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<restrict>
+  <!-- deny calling operations or getting attributes from these mbeans -->
+  <deny>
+    <mbean>
+      <name>com.sun.management:type=DiagnosticCommand</name>
+      <attribute>*</attribute>
+      <operation>*</operation>
+    </mbean>
+    <mbean>
+      <name>com.sun.management:type=HotSpotDiagnostic</name>
+      <attribute>*</attribute>
+      <operation>*</operation>
+    </mbean>
+  </deny>
+
+</restrict>
