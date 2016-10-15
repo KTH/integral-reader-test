@@ -4,7 +4,7 @@
 
   <groupId>se.kth.integral</groupId>
   <version>1.0-SNAPSHOT</version>
-  <artifactId>ug-multicast</artifactId>
+  <artifactId>integral-ug-multicast</artifactId>
   <packaging>jar</packaging>
 
   <name>KTH Integral UG multicast route</name>
@@ -199,21 +199,23 @@
           <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
         </configuration>
       </plugin>
+
+      <!-- Docker image build and push -->
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
         <version>0.4.13</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>build</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <dockerDirectory>docker</dockerDirectory>
-          <imageName>kth/${project.artifactId}:${git.commit.id.abbrev}</imageName>
+          <imageName>kthse/${project.artifactId}</imageName>
+          <image>kthse/${project.artifactId}</image>
+          <newName>kthse/${project.artifactId}</newName>
+          <useConfigFile>true</useConfigFile>
+          <imageTags>
+            <imageTag>latest</imageTag>
+            <imageTag>${project.version}</imageTag>
+            <imageTag>${git.commit.id.abbrev}</imageTag>
+          </imageTags>
           <resources>
             <resource>
               <targetPath>/</targetPath>

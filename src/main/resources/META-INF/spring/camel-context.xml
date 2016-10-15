@@ -17,7 +17,6 @@
       <multicast>
         <to uri="direct:canvas" />
       </multicast>
-      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
       <filter>
         <simple>${in.header.UGOperation} == 'UPDATE'</simple>
         <log loggingLevel="INFO" message="Handled update for ${in.header.UGClass}, ${in.header.UGKthid}, version ${in.header.UGVersion}"/>
