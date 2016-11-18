@@ -10,29 +10,26 @@
     <property name="location" value="file:camel.properties" />
   </bean>
 
-  <camelContext id="ug-multicast" xmlns="http://camel.apache.org/schema/spring">
-    <route id="ug-to-destinations-multicast">
-      <from uri="amqp:queue:{{service_bus.ug.queue}}" />
-      <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=DEBUG&amp;showAll=true" />
-      <multicast>
-        <to uri="direct:canvas" />
-      </multicast>
-      <filter>
-        <simple>${in.header.UGOperation} == 'UPDATE'</simple>
-        <log loggingLevel="INFO" message="Handled update for ${in.header.UGClass}, ${in.header.UGKthid}, version ${in.header.UGVersion}"/>
-      </filter>
-    </route>
+  <bean id="messageRepo" class="org.apache.camel.processor.idempotent.MemoryIdempotentRepository"/>
 
-    <!--  Route for messages intended for Canvas -->
-    <route id="ug-canvas-route">
-      <from uri="direct:canvas"/>
-      <filter>
-        <!-- Should filter messages and attributes here -->
-        <simple>${in.header.UGOperation} == 'UPDATE'</simple>
-        <to uri="amqp:queue:{{service_bus.canvas.queue}}" />
-      </filter>
+  <camelContext id="ug-multicast" errorHandlerRef="retryErrorHandler"
+        xmlns="http://camel.apache.org/schema/spring">
+    <route id="ug-queue-reader">
+      <from uri="amqp:queue:{{service_bus.ug.queue}}" />
+      <idempotentConsumer messageIdRepositoryRef="messageRepo" eager="false">
+        <header>JMSMessageID</header>
+        <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=INFO&amp;showAll=true" />
+      </idempotentConsumer>
     </route>
   </camelContext>
+
+  <errorHandler id="retryErrorHandler" type="DefaultErrorHandler"
+          xmlns="http://camel.apache.org/schema/spring">
+    <redeliveryPolicy maximumRedeliveries="10"
+                      retryAttemptedLogLevel="WARN"
+                      backOffMultiplier="2"
+                      useExponentialBackOff="true"/>
+  </errorHandler>
 
   <!-- ug-propagator queue -->
   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">

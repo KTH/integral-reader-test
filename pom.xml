@@ -4,10 +4,10 @@
 
   <groupId>se.kth.integral</groupId>
   <version>1.0-SNAPSHOT</version>
-  <artifactId>integral-ug-multicast</artifactId>
+  <artifactId>integral-reader-test</artifactId>
   <packaging>jar</packaging>
 
-  <name>KTH Integral UG multicast route</name>
+  <name>KTH Integral queue reader test</name>
   <url>https://www.kth.se</url>
   <description>A route to spread out UG data to other Azure Service Bus queue.</description>
 
@@ -50,11 +50,6 @@
       <artifactId>qpid-client</artifactId>
       <version>6.0.5</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jms_1.1_spec</artifactId>
-      <version>1.1.1</version>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.camel</groupId>
@@ -75,13 +70,6 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-amqp</artifactId>
         <version>${camel-version}</version>
-    </dependency>
-    <!-- Need classes provided by ug-component for marshal/unmarshal -->
-    <dependency>
-      <groupId>se.kth.infosys.smx</groupId>
-      <artifactId>camel-ug-component</artifactId>
-      <version>1.2.1</version>
-      <scope>runtime</scope>
     </dependency>
     
     <dependency>
