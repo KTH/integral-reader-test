@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MIT License
+
+  Copyright (c) 2016 Kungliga Tekniska högskolan
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jolokia="http://www.jolokia.org/jolokia-spring/schema/config"
@@ -6,15 +29,30 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+  <!--
+    Read configuration properties from file. The Bridge property place holder can be
+    used in both Spring parts and within the Camel route below.
+  -->
   <bean id="camel_properties" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
     <property name="location" value="file:camel.properties" />
   </bean>
 
+  <!--
+    Set up the class needed by the Idempotent Consumer. An Idempotent Consumer is and
+    Enterprise Integration Pattern wich makes sure (to a limit) that a message is only
+    handled once. This default configuration keeps a LRU cache with 1000 entries in 
+    memory.
+  -->
   <bean id="messageRepo" class="org.apache.camel.processor.idempotent.MemoryIdempotentRepository"/>
 
-  <camelContext id="ug-multicast" errorHandlerRef="retryErrorHandler"
+  <!--
+    The actual Camel route where the stuff happens.
+    Reads from queue, uses the Idempotent consuming to filter on JMSMessageID 
+    and prints a log message for each message.
+  -->
+  <camelContext id="service-bus-reader" errorHandlerRef="retryErrorHandler"
         xmlns="http://camel.apache.org/schema/spring">
-    <route id="ug-queue-reader">
+    <route id="service-bus-queue-reader">
       <from uri="amqp:queue:{{service_bus.ug.queue}}" />
       <idempotentConsumer messageIdRepositoryRef="messageRepo" eager="false">
         <header>JMSMessageID</header>
@@ -23,6 +61,11 @@
     </route>
   </camelContext>
 
+  <!--
+    Set up Camel error handling. This uses the default error handler in Camel
+    but makes it retry 10 times with an exponential back-off before throwing
+    exception and proceeding with next message.
+  -->
   <errorHandler id="retryErrorHandler" type="DefaultErrorHandler"
           xmlns="http://camel.apache.org/schema/spring">
     <redeliveryPolicy maximumRedeliveries="10"
@@ -31,14 +74,18 @@
                       useExponentialBackOff="true"/>
   </errorHandler>
 
-  <!-- ug-propagator queue -->
+  <!-- Service Bus AMQP 1.0 connection -->
   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
     <!-- amqp.traceFrames=true turns on protocol debugging -->
-    <!-- amqp.idleTimeout=120000 is required by Service Bus -->  
+    <!-- amqp.idleTimeout=120000 is minimum required by Service Bus -->  
     <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000" />
     <property name="username" value="${service_bus.user}" />
     <property name="password" value="${service_bus.password}" />
-    <!-- Makes Service Bus connection behave reasonably -->
+    <!-- 
+      Makes Service Bus connection behave reasonably.
+      In particular this means that the client is not sending drain=true packets
+      which apparently Service Bus doesn't currently support. /fjo 2016-11-18
+    -->
     <property name="receiveLocalOnly" value="true" />
   </bean>
   <bean id="jmsCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -52,7 +99,20 @@
     <property name="configuration" ref="jmsConfig" />
   </bean>
 
-  <!-- Jolokia monitor agent -->
+  <!-- 
+    Jolokia monitor agent.
+
+    This is something you may or may not want to have. It adds support for 
+    Hawtio remote monitoring and management for the Camel route. There is
+    no access control implemented here, you need to make sure you control
+    access to the component somehow if you enable it.
+    
+    Jolokia monitoring makes it possible to look at routes at runtime
+    in the KTH Integral environment.
+    
+    The wierd #{'$'} notation is a crappy workaround to use Spring properties.
+  -->
+  <!-- 
   <bean name="jolokia" id="jolokia" class="org.jolokia.jvmagent.spring.SpringJolokiaAgent">
     <property name="lookupConfig" value="false" />
     <property name="systemPropertiesMode" value="never" />
@@ -70,4 +130,5 @@
       </bean>
     </property>
   </bean>
+  -->
 </beans>
