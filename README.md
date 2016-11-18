@@ -32,8 +32,8 @@ security considerations and is disabled by default.
 
 ### The Docker image
 
-The Docker image bits are found in `docker`. There is not much there ti discover, 
-just the Dockerinfo file and a start script. The Docker image is based the 
+The Docker image bits are found in `docker`. There is not much there to discover, 
+just the Dockerinfo file and a start script. The Docker image is based on the 
 "trusted" Alpine OpenJDK image.
 
 ### The Maven build process
@@ -59,12 +59,10 @@ You must have Docker running on your host to build the Docker image as usual.
 
 ## Running
 
-Given a file environment containing environment variables as mentioned above, the image can be run with docker run as in this example.
+Given a file environment containing environment variables as mentioned above, 
+the image can be run with docker run as in this example. There is an `evironment.in`
+skeleton for your convenience.
 
 ```
-docker run --name=integral-reader-test \
-    --hostname=integral-ug-propagator \
-    --network=integral_isolated_nw \
-    --env-file=environment \
-    integral-reader-test:latest
+docker run --env-file=environment kthse/integral-reader-test:latest
 ```
