@@ -102,17 +102,13 @@
   <!-- 
     Jolokia monitor agent.
 
-    This is something you may or may not want to have. It adds support for 
-    Hawtio remote monitoring and management for the Camel route. There is
-    no access control implemented here, you need to make sure you control
-    access to the component somehow if you enable it.
-    
-    Jolokia monitoring makes it possible to look at routes at runtime
-    in the KTH Integral environment.
+    It adds support for Hawtio remote monitoring and management for the Camel
+    route. Not really necessary but left here for demonstration purposes.
+    There is no access control implemented here, in a production environment you
+    need to provide that somehow.
     
     The wierd #{'$'} notation is a crappy workaround to use Spring properties.
   -->
-  <!-- 
   <bean name="jolokia" id="jolokia" class="org.jolokia.jvmagent.spring.SpringJolokiaAgent">
     <property name="lookupConfig" value="false" />
     <property name="systemPropertiesMode" value="never" />
@@ -130,5 +126,4 @@
       </bean>
     </property>
   </bean>
-  -->
 </beans>

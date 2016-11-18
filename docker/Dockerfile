@@ -10,7 +10,7 @@ ENV SERVICE_BUS_URI the-service-bus-uri
 # ENV SERVICE_BUS_UG_QUEUE the-service-bus-ug-queue
 
 # Jolokia management and discovery
-EXPOSE 8181 24884
+EXPOSE 8181
 
 ADD integral-*.jar /opt/camel/application.jar
 ADD run.sh /opt/integral/run.sh
