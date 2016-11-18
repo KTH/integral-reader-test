@@ -38,6 +38,9 @@ just the Dockerinfo file and a start script. The Docker image is based on the
 
 ### The Maven build process
 
+Dependencies for Apache Qpid are updated to latest versions for AMQP 1.0 support
+in pom.xml.
+
 The build process is entirely based on Maven. In order to simplify the other parts
 the build output creates a "shaded" jar-file containing all the stuff needed to run
 and Mainclass definition in jar manifest. The mainclass is just a pointer to the

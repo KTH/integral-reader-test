@@ -30,7 +30,7 @@
   <artifactId>integral-reader-test</artifactId>
   <packaging>jar</packaging>
 
-  <name>KTH Integral queue reader test</name>
+  <name>Service Bus Camel reader test</name>
   <url>https://www.kth.se</url>
   <description>A Camel route reading from an Azure Service Bus queue.</description>
 
@@ -92,21 +92,15 @@
       <version>1.0.0</version>
     </dependency>
     
-    <!-- Testing -->
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-test-blueprint</artifactId>
-      <version>${camel-version}</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- Monitor -->
+    <!--
     <dependency>
      <groupId>org.jolokia</groupId>
      <artifactId>jolokia-spring</artifactId>
      <version>1.3.4</version>
      <scope>runtime</scope>
-    </dependency>
+     </dependency>
+     -->
   </dependencies>
 
   <build>
@@ -128,30 +122,6 @@
         <version>2.6</version>
         <configuration>
           <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-
-      <!-- to generate the MANIFEST-FILE of the bundle -->
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Import-Package>*</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-      
-      <!-- to run the example using mvn camel:run -->
-      <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-maven-plugin</artifactId>
-        <version>${camel-version}</version>
-        <configuration>
-          <useBlueprint>true</useBlueprint>
         </configuration>
       </plugin>
 
