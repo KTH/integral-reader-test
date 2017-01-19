@@ -10,7 +10,7 @@ standard Camel components.
 
 | Variable | Description |
 |---------------------|---------------------|
-| SERVICE_BUS_URI | URI to Service Bus instance, without protocol, e.g: kth-integral.servicebus.windows.net?amqp.idleTimeout=120000 |
+| SERVICE_BUS_URI | URI to Service Bus instance, without protocol, e.g: kth-integral.servicebus.windows.net |
 | SERVICE_BUS_USER | The Service Bus principal ID, needs listen access to queue |
 | SERVICE_BUS_PASSWORD | The Service Bus key for the principal ID |
 | SERVICE_BUS_QUEUE | The name of the Service Bus queue |
