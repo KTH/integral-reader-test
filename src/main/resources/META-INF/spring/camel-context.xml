@@ -53,10 +53,10 @@
   <camelContext id="service-bus-reader" errorHandlerRef="retryErrorHandler"
         xmlns="http://camel.apache.org/schema/spring">
     <route id="service-bus-queue-reader">
-      <from uri="amqp:queue:{{service_bus.ug.queue}}" />
+      <from uri="amqp:topic:{{service_bus.ug.queue}}" />
       <idempotentConsumer messageIdRepositoryRef="messageRepo" eager="false">
         <header>JMSMessageID</header>
-        <to uri="log:se.kth.integral.ug-to-destinations-multicast?level=INFO&amp;showAll=true" />
+        <to uri="log:se.kth.integral.reader-test?level=INFO&amp;showAll=true" />
       </idempotentConsumer>
     </route>
   </camelContext>
@@ -74,18 +74,15 @@
                       useExponentialBackOff="true"/>
   </errorHandler>
 
-  <!-- Service Bus AMQP 1.0 connection -->
+
+  <!-- ug-propagator queue -->
   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
     <!-- amqp.traceFrames=true turns on protocol debugging -->
-    <!-- amqp.idleTimeout=120000 is minimum required by Service Bus -->  
+    <!-- amqp.idleTimeout=120000 is required by Service Bus -->  
     <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000" />
     <property name="username" value="${service_bus.user}" />
     <property name="password" value="${service_bus.password}" />
-    <!-- 
-      Makes Service Bus connection behave reasonably.
-      In particular this means that the client is not sending drain=true packets
-      which apparently Service Bus doesn't currently support. /fjo 2016-11-18
-    -->
+    <!-- Makes Service Bus connection behave reasonably -->
     <property name="receiveLocalOnly" value="true" />
   </bean>
   <bean id="jmsCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
@@ -94,6 +91,7 @@
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" >
     <property name="connectionFactory" ref="jmsCachingConnectionFactory" /> 
     <property name="cacheLevelName" value="CACHE_AUTO" />
+    <property name="acknowledgementModeName" value="CLIENT_ACKNOWLEDGE" />
   </bean>   
   <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
     <property name="configuration" ref="jmsConfig" />

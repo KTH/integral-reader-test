@@ -6,3 +6,5 @@
 /create-service
 /environment
 /dependency-reduced-pom.xml
+/src/main/resources/camel.properties
+/camel.properties

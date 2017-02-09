@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MIT License
+
+  Copyright (c) 2016 Kungliga Tekniska högskolan
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
+<Configuration packages="se.kth.infosys.log4j">
+  <Appenders>
+    <Console name="stdout" target="SYSTEM_OUT">
+      <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="ACCEPT"/>
+      <PatternLayout pattern="%-4r %-5p %-30.30c{1} %x - %m%n"/>
+    </Console>
+
+    <Console name="stderr" target="SYSTEM_ERR">
+      <ThresholdFilter level="WARN"/>
+      <PatternLayout pattern="%-4r %-5p %-30.30c{1} %x - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="se.kth.infosys" level="DEBUG"/>
+<!--
+    <Logger name="org.apache.qpid.jms.provider.amqp.FRAMES" level="TRACE"/>
+-->
+
+    <Root level="INFO">
+      <AppenderRef ref="stdout"/>
+      <AppenderRef ref="stderr"/>
+    </Root>
+  </Loggers>
+</Configuration>
