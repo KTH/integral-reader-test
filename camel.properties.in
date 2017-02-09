@@ -1,0 +1,4 @@
+service_bus.uri=namespace.servicebus.windows.net
+service_bus.user=
+service_bus.password=
+service_bus.ug.queue=

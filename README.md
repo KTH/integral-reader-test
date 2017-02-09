@@ -69,3 +69,8 @@ skeleton for your convenience.
 ```
 docker run --env-file=environment kthse/integral-reader-test:latest
 ```
+
+### Running with maven without docker
+
+If creating a camel.properties from the template camel.properties.in, you can
+also run the application without docker using the target `mvn camel:run`.
