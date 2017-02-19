@@ -6,14 +6,37 @@ standard Camel components.
 
 ## Configuration
 
+The application starts with the class path `/run/secrets:/opt/data:/opt/camel`, and
+looks for a file named camel.properties for configuration. This allows for a number
+of options on how to configure the application.
+
+1. You can use environment variables, which is used to create camel.properties in /opt/camel
+   when the container starts. There is a sceleton file in environment.in.
+1. You can instead choose to use properties in either /opt/data, which can be made a volume
+   mount to some shared area. There is a sceleton file in camel.properties.in.
+1. Or you can use properties files in /run/secrets, using the new mechanism for secrets in Docker
+   1.13.
+
+There are no defaults, all options must be set regardless of method. Methods cannot
+be combined. Also see section "Running" below.
+
 ### Service Bus configuration variables
 
-| Variable | Description |
-|---------------------|---------------------|
-| SERVICE_BUS_URI | URI to Service Bus instance, without protocol, e.g: kth-integral.servicebus.windows.net?amqp.idleTimeout=120000 |
-| SERVICE_BUS_USER | The Service Bus principal ID, needs listen access to queue |
-| SERVICE_BUS_PASSWORD | The Service Bus key for the principal ID |
-| SERVICE_BUS_QUEUE | The name of the Service Bus queue |
+| Variable | Property | Description |
+|----------|----------|-------------|
+| SERVICE_BUS_URI | service_bus.url | URI to Service Bus instance, without protocol, e.g: kth-integral.servicebus.windows.net |
+| SERVICE_BUS_QUEUE | service_bus.queue | The name of the Service Bus queue to read from. |
+| SERVICE_BUS_USER | service_bus.user | The Service Bus principal ID, needs read access to queue |
+| SERVICE_BUS_PASSWORD | service_bus.password | The Service Bus key for the principal ID |
+
+### Using Topics
+
+For a regular Service Bus queue, the SERVICE_BUS_QUEUE is just the string with the name
+of the queue. However, you can just as easily use a topic and corresponding subscription instead.
+The SERVICE_BUS_QUEUE would then be *topic*/subscriptions/*subscription* where *topic* and
+*subscription* are the Service Bus name of the topic and name of the subscription designated
+to your application. Straight forward, but note the static string '/subscriptions/'
+included in the queue name to use for a topic.
 
 ## About the project
 
@@ -72,5 +95,6 @@ docker run --env-file=environment kthse/integral-reader-test:latest
 
 ### Running with maven without docker
 
-If creating a camel.properties from the template camel.properties.in, you can
-also run the application without docker using the target `mvn camel:run`.
+If creating a camel.properties from the template camel.properties.in and placing
+the file appropriately somewhere in your class path, you can also run the application
+standalone without docker using the target `mvn camel:run`, e.g. in development.

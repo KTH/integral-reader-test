@@ -1,4 +1,4 @@
-SERVICE_BUS_URI=lms-queue.servicebus.windows.net
-SERVICE_BUS_USER=RootManageSharedAccessKey
+SERVICE_BUS_URI=my-namespace.servicebus.windows.net
+SERVICE_BUS_USER=
 SERVICE_BUS_PASSWORD=
 SERVICE_BUS_QUEUE=

@@ -53,7 +53,7 @@
   <camelContext id="service-bus-reader" errorHandlerRef="retryErrorHandler"
         xmlns="http://camel.apache.org/schema/spring">
     <route id="service-bus-queue-reader">
-      <from uri="amqp:topic:{{service_bus.ug.queue}}" />
+      <from uri="amqp:topic:{{service_bus.queue}}" />
       <idempotentConsumer messageIdRepositoryRef="messageRepo" eager="false">
         <header>JMSMessageID</header>
         <to uri="log:se.kth.integral.reader-test?level=INFO&amp;showAll=true" />
