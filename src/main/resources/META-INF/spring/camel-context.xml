@@ -75,24 +75,30 @@
   </errorHandler>
 
 
-  <!-- ug-propagator queue -->
+  <!-- AMQP configuration -->
+  <bean id="prefetchPolicy" class="org.apache.qpid.jms.policy.JmsDefaultPrefetchPolicy">
+    <property name="all" value="${service_bus.prefetch:1}" />
+  </bean>
   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
     <!-- amqp.traceFrames=true turns on protocol debugging -->
     <!-- amqp.idleTimeout=120000 is required by Service Bus -->  
     <property name="remoteURI" value="amqps://${service_bus.uri}?amqp.idleTimeout=120000" />
     <property name="username" value="${service_bus.user}" />
     <property name="password" value="${service_bus.password}" />
+    <property name="sendTimeout" value="60000" />
+    <property name="requestTimeout" value="60000" />
+    <property name="awaitClientID" value="false" />
     <!-- Makes Service Bus connection behave reasonably -->
     <property name="receiveLocalOnly" value="true" />
   </bean>
-  <bean id="jmsCachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+  <bean id="jmsSingleConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
     <property name="targetConnectionFactory" ref="jmsConnectionFactory" />
+    <property name="reconnectOnException" value="true" />
   </bean>
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" >
-    <property name="connectionFactory" ref="jmsCachingConnectionFactory" /> 
-    <property name="cacheLevelName" value="CACHE_AUTO" />
+    <property name="connectionFactory" ref="jmsSingleConnectionFactory" />
     <property name="acknowledgementModeName" value="CLIENT_ACKNOWLEDGE" />
-  </bean>   
+  </bean>
   <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
     <property name="configuration" ref="jmsConfig" />
   </bean>
